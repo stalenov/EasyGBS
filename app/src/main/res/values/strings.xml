@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Easy GBS</string>
+    <string name="btnRefresh">обовить</string>
+    <string name="noDatayet">Данные еще не опубликованы</string>
+    <string name="network_error">Нет соединения с сервером =(</string>
+    <string name="statusLoaded">Меню обновлено в </string>
 </resources>

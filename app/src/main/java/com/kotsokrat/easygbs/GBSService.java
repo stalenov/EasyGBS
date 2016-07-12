@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -16,7 +17,10 @@ public class GBSService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId){
         return super.onStartCommand(intent, flags, startId);
 
-        GBSLoader gbsLoader = new GBSLoader(this);
+
+/*
+        GBSLoader gbsLoader = new GBSLoader(ctx);
+
         switch (gbsLoader.checkChanges()) {
             case GBSLoader.CHNG_HASH_CHANGED:
                 // обновляем данные в файле
@@ -38,7 +42,7 @@ public class GBSService extends Service {
                 break;
             default:
                 break;
-        }
+        }*/
 
 
 
