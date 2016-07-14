@@ -55,11 +55,14 @@ public class GBSLoader {
             String flag = httpData.getString(DATA_FLAG);        // флаг (0 = данные актуальны)
 
             if (flag.equals(Integer.toString(1))){
+                // TODO gbsLoader.savePrefs(); - нужно ли обновлять данные, если флаг в 1?
                 return CHNG_FLAG_ENABLED;                       // флаг в единице, т.е. данные еще/уже не актуальны
+
             } else {
                 if (hashHttp.equals(hashPrefs)){
                     return CHNG_HASH_EQUAL;                     // хэш одинаков - ничего не делаем
                 } else {
+                    savePrefs();
                     return CHNG_HASH_CHANGED;                   // хэш изменился
                 }
             }
@@ -67,9 +70,6 @@ public class GBSLoader {
             e.printStackTrace();
             return CHNG_ERR_CONNECT;                                // oшибка соединения
         }
-
-
-
     }
 
     public String loadPrefsHash(){

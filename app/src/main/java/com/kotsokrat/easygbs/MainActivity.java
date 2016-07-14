@@ -1,5 +1,6 @@
 package com.kotsokrat.easygbs;
 
+import android.content.Context;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -22,6 +23,7 @@ public class MainActivity extends AppCompatActivity {
 
     TextView tvLunch, tvFirestTea, tvInfo, tvStatus;
     Button btnRefresh;
+    GBSLoader gbsLoader;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,13 +40,23 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        new LoadData().execute(this);
+    }
 
-        GBSLoader gbsLoader = new GBSLoader(this);
-            switch (gbsLoader.checkChanges()) {
+
+    class LoadData extends AsyncTask<Context, Void, Integer>{
+        @Override
+        protected Integer doInBackground(Context... contexts) {
+            gbsLoader = new GBSLoader(contexts[0]);
+            return gbsLoader.checkChanges();
+        }
+
+        @Override
+        protected void onPostExecute(Integer status) {
+            super.onPostExecute(status);
+            switch (status) {
                 case GBSLoader.CHNG_HASH_CHANGED:
-                    // обновляем данные в файле
                     Log.d(tag, "HASH changed");
-                    gbsLoader.savePrefs();
                     // обновляем данные в активити
                     try {
                         JSONObject data = gbsLoader.loadPrefs();
@@ -61,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
                     updateDateTextView(LINK_OK);
                     break;
                 case GBSLoader.CHNG_FLAG_ENABLED:
-                    gbsLoader.savePrefs();
+
                     try {
                         JSONObject data = gbsLoader.loadPrefs();
                         tvFirestTea.setText(getString(R.string.noDatayet));
@@ -87,7 +99,9 @@ public class MainActivity extends AppCompatActivity {
                 default:
                     break;
             }
+        }
     }
+
 
     void updateDateTextView(boolean linkOk){
         if (linkOk) {
