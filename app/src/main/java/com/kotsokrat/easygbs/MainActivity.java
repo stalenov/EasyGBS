@@ -23,7 +23,6 @@ public class MainActivity extends AppCompatActivity {
 
     TextView tvLunch, tvFirestTea, tvInfo, tvStatus;
     Button btnRefresh;
-    GBSLoader gbsLoader;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,63 +39,76 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        new LoadData().execute(this);
+        new UpdateScreenData().execute(this);
+
     }
 
-
-    class LoadData extends AsyncTask<Context, Void, Integer>{
+    class UpdateScreenData extends AsyncTask<Context, Void, Integer>{
+        GBSLoader gbsLoader;
+        JSONObject data;
         @Override
         protected Integer doInBackground(Context... contexts) {
             gbsLoader = new GBSLoader(contexts[0]);
-            return gbsLoader.checkChanges();
+            int status = gbsLoader.checkChanges();
+            Log.d("bla", Integer.toString(status));
+            switch (status) {
+                case GBSLoader.CHNG_HASH_CHANGED:
+                    Log.d(tag, "HASH changed");
+                    data = gbsLoader.loadPrefs();
+                    gbsLoader.savePrefs();
+                    break;
+                case GBSLoader.CHNG_FLAG_ENABLED:
+                    gbsLoader.savePrefs();
+                    data = gbsLoader.loadPrefs();
+                    Log.d(tag, "FLAG enabled");
+                    break;
+                case GBSLoader.CHNG_ERR_CONNECT:
+                    Log.d(tag, "ERR connect");
+                    break;
+                case GBSLoader.CHNG_HASH_EQUAL:
+                    Log.d(tag, "HASH equal");
+                    break;
+                default:
+                    break;
+            }
+            return status;
         }
+
 
         @Override
         protected void onPostExecute(Integer status) {
             super.onPostExecute(status);
             switch (status) {
-                case GBSLoader.CHNG_HASH_CHANGED:
-                    Log.d(tag, "HASH changed");
-                    // обновляем данные в активити
-                    try {
-                        JSONObject data = gbsLoader.loadPrefs();
-                        tvFirestTea.setText(data.getString(GBSLoader.DATA_FIRSTTEA));
-                        tvLunch.setText(data.getString(GBSLoader.DATA_LUNCH));
-                        tvInfo.setText(data.getString(GBSLoader.DATA_INFO));
-
-                    }catch (Exception e){
-                        e.printStackTrace();
-                    }
-                    // TODO добавить нотифик в сервис
-
-                    // выставляем последнюю дату обновления
+                case GBSLoader.CHNG_HASH_EQUAL:
                     updateDateTextView(LINK_OK);
-                    break;
-                case GBSLoader.CHNG_FLAG_ENABLED:
-
-                    try {
-                        JSONObject data = gbsLoader.loadPrefs();
-                        tvFirestTea.setText(getString(R.string.noDatayet));
-                        tvLunch.setText(getString(R.string.noDatayet));
-                        tvInfo.setText(data.getString(GBSLoader.DATA_INFO));
-
-                    }catch (Exception e){
-                        e.printStackTrace();
-                    }
-                    // выставляем последнюю дату обновления
-                    updateDateTextView(LINK_OK);
-                    Log.d(tag, "FLAG enabled");
                     break;
                 case GBSLoader.CHNG_ERR_CONNECT:
                     updateDateTextView(LINK_DOWN);
-                    Log.d(tag, "ERR connect");
                     break;
-                case GBSLoader.CHNG_HASH_EQUAL:
+                case GBSLoader.CHNG_HASH_CHANGED:
                     updateDateTextView(LINK_OK);
-                    // и не делаем нифига (ура-ура!) =)
-                    Log.d(tag, "HASH equal");
+                    //GBSLoader gbsLoader = new GBSLoader(MainActivity.this);
+                    //JSONObject data = gbsLoader.loadPrefs();
+                    try {
+                        tvFirestTea.setText(data.getString(GBSLoader.DATA_FIRSTTEA));
+                        tvLunch.setText(data.getString(GBSLoader.DATA_LUNCH));
+                        tvInfo.setText(data.getString(GBSLoader.DATA_INFO));
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                     break;
-                default:
+                case GBSLoader.CHNG_FLAG_ENABLED:
+                    updateDateTextView(LINK_OK);
+                    //gbsLoader = new GBSLoader(MainActivity.this);
+
+
+                    try {
+                        tvFirestTea.setText(getString(R.string.noDatayet));
+                        tvLunch.setText(getString(R.string.noDatayet));
+                        tvInfo.setText(data.getString(GBSLoader.DATA_INFO));
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
                     break;
             }
         }
@@ -112,6 +124,4 @@ public class MainActivity extends AppCompatActivity {
             tvStatus.setText(getText(R.string.network_error));
         }
     }
-
-
 }
