@@ -5,6 +5,7 @@ import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -34,6 +35,13 @@ public class MainActivity extends AppCompatActivity {
         tvInfo = (TextView) findViewById(R.id.tvInfo);
         tvStatus = (TextView) findViewById(R.id.tvStatus);
         btnRefresh = (Button) findViewById(R.id.btnRefresh);
+        btnRefresh.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(tag, "Button clicked");
+                new UpdateScreenData().execute(MainActivity.this);
+            }
+        });
     }
 
     @Override
@@ -53,20 +61,17 @@ public class MainActivity extends AppCompatActivity {
             Log.d("bla", Integer.toString(status));
             switch (status) {
                 case GBSLoader.CHNG_HASH_CHANGED:
-                    Log.d(tag, "HASH changed");
                     data = gbsLoader.loadPrefs();
                     gbsLoader.savePrefs();
                     break;
                 case GBSLoader.CHNG_FLAG_ENABLED:
                     gbsLoader.savePrefs();
                     data = gbsLoader.loadPrefs();
-                    Log.d(tag, "FLAG enabled");
                     break;
                 case GBSLoader.CHNG_ERR_CONNECT:
-                    Log.d(tag, "ERR connect");
                     break;
                 case GBSLoader.CHNG_HASH_EQUAL:
-                    Log.d(tag, "HASH equal");
+                    data = gbsLoader.loadPrefs();
                     break;
                 default:
                     break;
@@ -79,9 +84,7 @@ public class MainActivity extends AppCompatActivity {
         protected void onPostExecute(Integer status) {
             super.onPostExecute(status);
             switch (status) {
-                case GBSLoader.CHNG_HASH_EQUAL:
-                    updateDateTextView(LINK_OK);
-                    break;
+
                 case GBSLoader.CHNG_ERR_CONNECT:
                     updateDateTextView(LINK_DOWN);
                     break;
@@ -97,10 +100,10 @@ public class MainActivity extends AppCompatActivity {
                         e.printStackTrace();
                     }
                     break;
+                case GBSLoader.CHNG_HASH_EQUAL:
                 case GBSLoader.CHNG_FLAG_ENABLED:
                     updateDateTextView(LINK_OK);
                     //gbsLoader = new GBSLoader(MainActivity.this);
-
 
                     try {
                         tvFirestTea.setText(getString(R.string.noDatayet));
@@ -117,7 +120,7 @@ public class MainActivity extends AppCompatActivity {
 
     void updateDateTextView(boolean linkOk){
         if (linkOk) {
-            DateFormat df = new SimpleDateFormat("HH:mm");
+            DateFormat df = new SimpleDateFormat("HH:mm:ss");
             String curDate = getText(R.string.statusLoaded) + " " + df.format(Calendar.getInstance().getTime());
             tvStatus.setText(curDate);
         } else {

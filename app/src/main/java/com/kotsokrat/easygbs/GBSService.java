@@ -18,45 +18,18 @@ public class GBSService extends Service {
         return super.onStartCommand(intent, flags, startId);
 
 
-/*
-        GBSLoader gbsLoader = new GBSLoader(ctx);
-
-        switch (gbsLoader.checkChanges()) {
-            case GBSLoader.CHNG_HASH_CHANGED:
-                // обновляем данные в файле
-                gbsLoader.savePrefs();
-                JSONObject data = gbsLoader.loadPrefs();
-                // обновляем данные в активити
-
-                // генерим нотифик
-                break;
-
-            case GBSLoader.CHNG_FLAG_ENABLED:
-
-                break;
-            case GBSLoader.CHNG_ERR_CONNECT:
-
-                break;
-            case GBSLoader.CHNG_HASH_EQUAL:
-                // не делаем нифига (ура-ура!) =)
-                break;
-            default:
-                break;
-        }*/
-
-
-
-/*        try {
-
-
-            new GBSLoader().checkChanges(ctx);
-        } catch (Exception e) {
-
-        }*/
-
-
 
     }
+
+    // TODO
+    // TODO
+    // TODO
+    // TODO
+    // TODO
+
+
+
+
 
     @Nullable
     @Override
