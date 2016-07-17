@@ -4,4 +4,7 @@
     <string name="noDatayet">Данные еще не опубликованы</string>
     <string name="network_error">Нет соединения с сервером =(</string>
     <string name="statusLoaded">Меню обновлено в </string>
+    <string name="firstTeaHead">Меню чая</string>
+    <string name="LunchHead">Обед</string>
+    <string name="infoHead">Информация</string>
 </resources>
