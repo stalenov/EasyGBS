@@ -1,10 +1,18 @@
 package com.kotsokrat.easygbs;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.os.SystemClock;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -19,9 +27,13 @@ import java.util.Calendar;
 public class MainActivity extends AppCompatActivity {
 
     final String tag = "myTag";
-
     final boolean LINK_OK = true;
     final boolean LINK_DOWN = false;
+    private AlarmManager am;
+    private Intent notificatorIntent;
+    private PendingIntent notificationPendingIntent;
+    int delay;
+
 
     TextView tvLunch, tvFirestTea, tvInfo, tvStatus;
     Button btnRefresh;
@@ -48,8 +60,38 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        new UpdateScreenData().execute(this);
+        getPreferences();
+        disableNotify();
 
+        new UpdateScreenData().execute(this);
+    }
+
+    @Override
+    protected void onPause(){
+        super.onPause();
+        if (delay != 0) enableNotify();
+    }
+
+    @Override
+    protected void onDestroy(){
+        super.onDestroy();
+        disableNotify();
+        if (delay != 0) enableNotify();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        menu.add(1, 1, 1, getString(R.string.menu_pref));
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == 1){
+            Intent prefIntent = new Intent(this, Preferences.class);
+            startActivity(prefIntent);
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     class UpdateScreenData extends AsyncTask<Context, Void, Integer>{
@@ -63,10 +105,10 @@ public class MainActivity extends AppCompatActivity {
             switch (status) {
                 case GBSLoader.CHNG_HASH_CHANGED:
                     data = gbsLoader.loadPrefs();
-                    gbsLoader.savePrefs();
+                    //gbsLoader.savePrefs();
                     break;
                 case GBSLoader.CHNG_FLAG_ENABLED:
-                    gbsLoader.savePrefs();
+                    //gbsLoader.savePrefs();
                     data = gbsLoader.loadPrefs();
                     break;
                 case GBSLoader.CHNG_ERR_CONNECT:
@@ -89,6 +131,7 @@ public class MainActivity extends AppCompatActivity {
                 case GBSLoader.CHNG_ERR_CONNECT:
                     updateDateTextView(LINK_DOWN);
                     break;
+                case GBSLoader.CHNG_HASH_EQUAL:
                 case GBSLoader.CHNG_HASH_CHANGED:
                     updateDateTextView(LINK_OK);
                     //GBSLoader gbsLoader = new GBSLoader(MainActivity.this);
@@ -101,7 +144,6 @@ public class MainActivity extends AppCompatActivity {
                         e.printStackTrace();
                     }
                     break;
-                case GBSLoader.CHNG_HASH_EQUAL:
                 case GBSLoader.CHNG_FLAG_ENABLED:
                     updateDateTextView(LINK_OK);
                     //gbsLoader = new GBSLoader(MainActivity.this);
@@ -128,4 +170,23 @@ public class MainActivity extends AppCompatActivity {
             tvStatus.setText(getText(R.string.network_error));
         }
     }
+
+    private void getPreferences(){
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+        delay = Integer.parseInt(prefs.getString("update_delay", "15"));
+    }
+
+    private void disableNotify(){
+        am = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
+        notificatorIntent = new Intent(this,GBSNotificator.class);
+        notificationPendingIntent = PendingIntent.getBroadcast(this, 0, notificatorIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+        am.cancel(notificationPendingIntent);
+    }
+
+    private void enableNotify(){
+        long notificationDelay = 1000 * delay;
+        am.setRepeating(AlarmManager.ELAPSED_REALTIME, SystemClock.elapsedRealtime() + 300, notificationDelay, notificationPendingIntent);
+    }
+
+
 }

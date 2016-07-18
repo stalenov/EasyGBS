@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
+import android.util.Log;
+
 import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -45,22 +47,24 @@ public class GBSLoader {
         String hashPrefs = loadPrefsHash();
 
         try {
-            JSONObject httpData = loadHTTP(HTTP_GET_TYPE_HASH);         // сохраненный хэш
-            String hashHttp = httpData.getString(DATA_HASH);                                // загруженный хэш
-            String flag = httpData.getString(DATA_FLAG);                                    // флаг (0 = данные актуальны)
+            JSONObject httpData = loadHTTP(HTTP_GET_TYPE_HASH);
+            String hashHttp = httpData.getString(DATA_HASH);
+            String flag = httpData.getString(DATA_FLAG);
+            Log.d("myLog", "checkChanges method started");
 
+            if (flag.equals(Integer.toString(1))) {
+                if (!(hashHttp.equals(hashPrefs))) savePrefs();
+                return CHNG_FLAG_ENABLED;
+            }
             if (hashHttp.equals(hashPrefs)){
-                return CHNG_HASH_EQUAL;                             // хэш одинаков - ничего не делаем
+                return CHNG_HASH_EQUAL;
             } else {
-                if (flag.equals(Integer.toString(1))){
-                    return CHNG_FLAG_ENABLED;                       // флаг в единице, т.е. данные еще/уже не актуальны
-                } else {
-                    return CHNG_HASH_CHANGED;                       // хэш изменился
-                }
+                savePrefs();
+                return CHNG_HASH_CHANGED;
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return CHNG_ERR_CONNECT;                                // oшибка соединения
+            return CHNG_ERR_CONNECT;
         }
     }
 

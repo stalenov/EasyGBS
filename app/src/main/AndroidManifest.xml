@@ -15,7 +15,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <service android:name=".GBSService"></service>
+        <activity
+            android:name=".Preferences"
+            android:label="Настройки"/>
+        <receiver android:name=".GBSNotificator"/>
     </application>
 
 </manifest>

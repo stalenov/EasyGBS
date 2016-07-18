@@ -15,7 +15,9 @@
         android:layout_gravity="center"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        card_view:cardUseCompatPadding="true"
         card_view:cardCornerRadius="4dp"
+        card_view:contentPadding= "5dp"
         style="@style/CardView">
         <RelativeLayout
             android:layout_width="match_parent"
@@ -52,6 +54,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         card_view:cardCornerRadius="4dp"
+        card_view:cardUseCompatPadding="true"
+        card_view:contentPadding= "5dp"
         style="@style/CardView">
         <RelativeLayout
             android:layout_width="match_parent"
@@ -87,6 +91,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         card_view:cardCornerRadius="4dp"
+        card_view:cardUseCompatPadding="true"
+        card_view:contentPadding= "5dp"
         style="@style/CardView">
         <RelativeLayout
             android:layout_width="match_parent"
