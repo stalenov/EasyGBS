@@ -60,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        getPreferences();
+        delay = getPreferences();
         disableNotify();
 
         new UpdateScreenData().execute(this);
@@ -69,14 +69,14 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause(){
         super.onPause();
-        if (delay != 0) enableNotify();
+        if (delay != 0) enableNotify(delay);
     }
 
     @Override
     protected void onDestroy(){
         super.onDestroy();
         disableNotify();
-        if (delay != 0) enableNotify();
+        if (delay != 0) enableNotify(delay);
     }
 
     @Override
@@ -171,9 +171,9 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void getPreferences(){
+    private int getPreferences(){
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-        delay = Integer.parseInt(prefs.getString("update_delay", "15"));
+        return Integer.parseInt(prefs.getString("update_delay", "15"));
     }
 
     private void disableNotify(){
@@ -183,9 +183,14 @@ public class MainActivity extends AppCompatActivity {
         am.cancel(notificationPendingIntent);
     }
 
-    private void enableNotify(){
-        long notificationDelay = 1000 * delay;
-        am.setRepeating(AlarmManager.ELAPSED_REALTIME, SystemClock.elapsedRealtime() + 300, notificationDelay, notificationPendingIntent);
+
+    // TODO обновлять преференсы при выборе времени обновления
+    private void enableNotify(Integer delay){
+        long notificationDelay = 60000 * delay;
+
+        Log.d(tag, Long.toString(notificationDelay));
+        am.setRepeating(AlarmManager.ELAPSED_REALTIME, SystemClock.elapsedRealtime(), notificationDelay, notificationPendingIntent);
+
     }
 
 
