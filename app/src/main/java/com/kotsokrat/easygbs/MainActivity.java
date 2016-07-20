@@ -55,6 +55,8 @@ public class MainActivity extends AppCompatActivity {
                 new UpdateScreenData().execute(MainActivity.this);
             }
         });
+
+        //TODO перед обновлением из хттп вставлять данные из файла
     }
 
     @Override
