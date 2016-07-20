@@ -173,6 +173,8 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    // TODO заменить методы аналогичными из класса ChangeAlerts()
+
     private int getPreferences(){
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
         return Integer.parseInt(prefs.getString("update_delay", "15"));

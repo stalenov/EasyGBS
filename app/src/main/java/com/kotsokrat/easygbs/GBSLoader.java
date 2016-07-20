@@ -106,8 +106,6 @@ public class GBSLoader {
         }
     }
 
-
-
     protected JSONObject loadHTTP(String type) {
         try {
             URL url = new URL(new StringBuilder().append(URL_ADDRESS).append("?type=").append(type).toString());
