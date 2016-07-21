@@ -1,13 +1,8 @@
 package com.kotsokrat.easygbs;
 
-import android.app.AlarmManager;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
-import android.os.SystemClock;
-import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -16,7 +11,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-import android.support.v7.widget.CardView;
 
 import org.json.JSONObject;
 
@@ -29,12 +23,7 @@ public class MainActivity extends AppCompatActivity {
     final String tag = "myTag";
     final boolean LINK_OK = true;
     final boolean LINK_DOWN = false;
-    private AlarmManager am;
-    private Intent notificatorIntent;
-    private PendingIntent notificationPendingIntent;
-    int delay;
-
-
+    AlertDelayChanger adc;
     TextView tvLunch, tvFirestTea, tvInfo, tvStatus;
     Button btnRefresh;
 
@@ -55,30 +44,26 @@ public class MainActivity extends AppCompatActivity {
                 new UpdateScreenData().execute(MainActivity.this);
             }
         });
-
-        //TODO перед обновлением из хттп вставлять данные из файла
+        adc = new AlertDelayChanger(this);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        delay = getPreferences();
-        disableNotify();
-
+        adc.remove();
         new UpdateScreenData().execute(this);
     }
 
     @Override
     protected void onPause(){
         super.onPause();
-        if (delay != 0) enableNotify(delay);
+        adc.set();
     }
 
     @Override
     protected void onDestroy(){
         super.onDestroy();
-        disableNotify();
-        if (delay != 0) enableNotify(delay);
+        adc.set();
     }
 
     @Override
@@ -90,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == 1){
-            Intent prefIntent = new Intent(this, Preferences.class);
+            Intent prefIntent = new Intent(this, PrefActivity.class);
             startActivity(prefIntent);
         }
         return super.onOptionsItemSelected(item);
@@ -106,17 +91,15 @@ public class MainActivity extends AppCompatActivity {
             Log.d("bla", Integer.toString(status));
             switch (status) {
                 case GBSLoader.CHNG_HASH_CHANGED:
-                    data = gbsLoader.loadPrefs();
-                    //gbsLoader.savePrefs();
+                    data = gbsLoader.loadPrefsFromFile();
                     break;
                 case GBSLoader.CHNG_FLAG_ENABLED:
-                    //gbsLoader.savePrefs();
-                    data = gbsLoader.loadPrefs();
+                    data = gbsLoader.loadPrefsFromFile();
                     break;
                 case GBSLoader.CHNG_ERR_CONNECT:
                     break;
                 case GBSLoader.CHNG_HASH_EQUAL:
-                    data = gbsLoader.loadPrefs();
+                    data = gbsLoader.loadPrefsFromFile();
                     break;
                 default:
                     break;
@@ -129,15 +112,12 @@ public class MainActivity extends AppCompatActivity {
         protected void onPostExecute(Integer status) {
             super.onPostExecute(status);
             switch (status) {
-
                 case GBSLoader.CHNG_ERR_CONNECT:
                     updateDateTextView(LINK_DOWN);
                     break;
                 case GBSLoader.CHNG_HASH_EQUAL:
                 case GBSLoader.CHNG_HASH_CHANGED:
                     updateDateTextView(LINK_OK);
-                    //GBSLoader gbsLoader = new GBSLoader(MainActivity.this);
-                    //JSONObject data = gbsLoader.loadPrefs();
                     try {
                         tvFirestTea.setText(data.getString(GBSLoader.DATA_FIRSTTEA));
                         tvLunch.setText(data.getString(GBSLoader.DATA_LUNCH));
@@ -148,8 +128,6 @@ public class MainActivity extends AppCompatActivity {
                     break;
                 case GBSLoader.CHNG_FLAG_ENABLED:
                     updateDateTextView(LINK_OK);
-                    //gbsLoader = new GBSLoader(MainActivity.this);
-
                     try {
                         tvFirestTea.setText(getString(R.string.noDatayet));
                         tvLunch.setText(getString(R.string.noDatayet));
@@ -162,7 +140,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-
     void updateDateTextView(boolean linkOk){
         if (linkOk) {
             DateFormat df = new SimpleDateFormat("HH:mm:ss");
@@ -172,30 +149,4 @@ public class MainActivity extends AppCompatActivity {
             tvStatus.setText(getText(R.string.network_error));
         }
     }
-
-    // TODO заменить методы аналогичными из класса ChangeAlerts()
-
-    private int getPreferences(){
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-        return Integer.parseInt(prefs.getString("update_delay", "15"));
-    }
-
-    private void disableNotify(){
-        am = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
-        notificatorIntent = new Intent(this,GBSNotificator.class);
-        notificationPendingIntent = PendingIntent.getBroadcast(this, 0, notificatorIntent, PendingIntent.FLAG_CANCEL_CURRENT);
-        am.cancel(notificationPendingIntent);
-    }
-
-
-    // TODO обновлять преференсы при выборе времени обновления
-    private void enableNotify(Integer delay){
-        long notificationDelay = 60000 * delay;
-
-        Log.d(tag, Long.toString(notificationDelay));
-        am.setRepeating(AlarmManager.ELAPSED_REALTIME, SystemClock.elapsedRealtime(), notificationDelay, notificationPendingIntent);
-
-    }
-
-
 }

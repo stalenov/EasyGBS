@@ -17,7 +17,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".Preferences"
+            android:name=".PrefActivity"
             android:label="Настройки"/>
         <receiver android:name=".GBSNotificator"/>
         <receiver android:name=".OnSysStartReceiver">

@@ -2,7 +2,6 @@ package com.kotsokrat.easygbs;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
@@ -47,19 +46,20 @@ public class GBSLoader {
         String hashPrefs = loadPrefsHash();
 
         try {
-            JSONObject httpData = loadHTTP(HTTP_GET_TYPE_HASH);
+            JSONObject httpData = loadDataFromHTTP(HTTP_GET_TYPE_HASH);
             String hashHttp = httpData.getString(DATA_HASH);
             String flag = httpData.getString(DATA_FLAG);
             Log.d("myLog", "checkChanges method started");
+            Log.d("myTag", "compare: " + hashHttp + " " + hashPrefs);
 
             if (flag.equals(Integer.toString(1))) {
-                if (!(hashHttp.equals(hashPrefs))) savePrefs();
+                if (!(hashHttp.equals(hashPrefs))) savePrefsToFile();
                 return CHNG_FLAG_ENABLED;
             }
             if (hashHttp.equals(hashPrefs)){
                 return CHNG_HASH_EQUAL;
             } else {
-                savePrefs();
+                savePrefsToFile();
                 return CHNG_HASH_CHANGED;
             }
         } catch (Exception e) {
@@ -70,11 +70,13 @@ public class GBSLoader {
 
     public String loadPrefsHash(){
         sPref = PreferenceManager.getDefaultSharedPreferences(context);
+        Log.d("myTag", "from prefs: " + sPref.getString(DATA_HASH, ""));
         return sPref.getString(DATA_HASH, "");
     }
 
     // загрузка всех данных из локального файла
-    public JSONObject loadPrefs(){
+    // TODO убрать нафиг jsonobject
+    public JSONObject loadPrefsFromFile(){
         sPref = PreferenceManager.getDefaultSharedPreferences(context);
         JSONObject jsonData = new JSONObject();
         try {
@@ -85,20 +87,23 @@ public class GBSLoader {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        Log.d("myTag", "Preferences loaded from http");
         return jsonData;
     }
 
     // сохранение данных в локальный файл
-    public boolean savePrefs(){
+    public boolean savePrefsToFile(){
         sPref = PreferenceManager.getDefaultSharedPreferences(context);
         SharedPreferences.Editor ed = sPref.edit();
+        Log.d("myTag", "Preferences saved");
         try {
-            JSONObject jsonData = loadHTTP(HTTP_GET_TYPE_DATA);
+            JSONObject jsonData = loadDataFromHTTP(HTTP_GET_TYPE_DATA);
             ed.putString(DATA_FIRSTTEA, jsonData.getString(DATA_FIRSTTEA));
             ed.putString(DATA_LUNCH, jsonData.getString(DATA_LUNCH));
             ed.putString(DATA_INFO, jsonData.getString(DATA_INFO));
             ed.putString(DATA_HASH, jsonData.getString(DATA_HASH));
             ed.commit();
+            Log.d("myTag", "from http: " + jsonData.getString(DATA_HASH));
             return true;
         }catch (Exception e){
             return false;
@@ -106,7 +111,7 @@ public class GBSLoader {
         }
     }
 
-    protected JSONObject loadHTTP(String type) {
+    protected JSONObject loadDataFromHTTP(String type) {
         try {
             URL url = new URL(new StringBuilder().append(URL_ADDRESS).append("?type=").append(type).toString());
             HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
