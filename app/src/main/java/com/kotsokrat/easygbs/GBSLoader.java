@@ -26,6 +26,7 @@ public class GBSLoader {
     public final static String DATA_INFO = "info";
     public final static String DATA_FLAG = "flag";
     public final static String DATA_HASH = "hash";
+    public final static String DATA_TIMESTAMP = "timestamp";
 
     // состояния, возвращаемые методом checkChanges
     public final static int CHNG_HASH_EQUAL = 0;
@@ -38,7 +39,6 @@ public class GBSLoader {
 
     GBSLoader(Context context){
         this.context = context;
-        //checkChanges();
     }
 
     // проверка изменения состояния
@@ -76,14 +76,19 @@ public class GBSLoader {
 
     // загрузка всех данных из локального файла
     // TODO убрать нафиг jsonobject
+
     public JSONObject loadPrefsFromFile(){
         sPref = PreferenceManager.getDefaultSharedPreferences(context);
         JSONObject jsonData = new JSONObject();
         try {
+            Long timeStampLong = System.currentTimeMillis() / 1000;
+            String timeStamp = timeStampLong.toString();
+
             jsonData.put(DATA_FIRSTTEA, sPref.getString(DATA_FIRSTTEA, ""));
             jsonData.put(DATA_LUNCH, sPref.getString(DATA_LUNCH, ""));
             jsonData.put(DATA_INFO, sPref.getString(DATA_INFO, ""));
             jsonData.put(DATA_HASH, sPref.getString(DATA_HASH, ""));
+            jsonData.put(DATA_TIMESTAMP, timeStamp);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -97,11 +102,15 @@ public class GBSLoader {
         SharedPreferences.Editor ed = sPref.edit();
         Log.d("myTag", "Preferences saved");
         try {
+            Long timeStampLong = System.currentTimeMillis() / 1000;
+            String timeStamp = timeStampLong.toString();
+
             JSONObject jsonData = loadDataFromHTTP(HTTP_GET_TYPE_DATA);
             ed.putString(DATA_FIRSTTEA, jsonData.getString(DATA_FIRSTTEA));
             ed.putString(DATA_LUNCH, jsonData.getString(DATA_LUNCH));
             ed.putString(DATA_INFO, jsonData.getString(DATA_INFO));
             ed.putString(DATA_HASH, jsonData.getString(DATA_HASH));
+            ed.putString(DATA_TIMESTAMP, timeStamp);
             ed.commit();
             Log.d("myTag", "from http: " + jsonData.getString(DATA_HASH));
             return true;
