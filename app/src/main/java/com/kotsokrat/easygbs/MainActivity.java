@@ -3,6 +3,7 @@ package com.kotsokrat.easygbs;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -11,18 +12,20 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-
-import org.json.JSONObject;
+import android.widget.Toast;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity {
 
     final String tag = "myTag";
-    final boolean LINK_OK = true;
-    final boolean LINK_DOWN = false;
+    final int LINK_OK = 0;
+    final int LINK_DOWN = 1;
+    final int UPDATE_ALL_DATA = 0;
+    final int UPDATE_ONLY_INFO = 1;
     AlertDelayChanger adc;
     TextView tvLunch, tvFirestTea, tvInfo, tvStatus;
     Button btnRefresh;
@@ -41,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Log.d(tag, "Button clicked");
-                new UpdateScreenData().execute(MainActivity.this);
+                new UpdateData().execute(MainActivity.this);
             }
         });
         adc = new AlertDelayChanger(this);
@@ -51,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         adc.remove();
-        new UpdateScreenData().execute(this);
+        new UpdateData().execute(this);
     }
 
     @Override
@@ -63,6 +66,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy(){
         super.onDestroy();
+        //handler.removeCallbacks(runnableDataUpdater);
         adc.set();
     }
 
@@ -81,14 +85,30 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    class UpdateScreenData extends AsyncTask<Context, Void, Integer>{
-        GBSLoader gbsLoader;
-        JSONObject data;
+    class UpdateData extends AsyncTask<Context, Void, Integer>{
+        GBSLoader gbsLoader = new GBSLoader(MainActivity.this);
+        HashMap<String,String> data;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            data = gbsLoader.loadPrefsFromFile();
+            if (data.containsKey(GBSLoader.DATA_TIMESTAMP)) {     // иначе при первом запуске ляжет, т.к. файл пустой
+                Long currentTimeStamp = System.currentTimeMillis() / 1000;
+                Long savedTimeStamp = Long.parseLong(data.get(GBSLoader.DATA_TIMESTAMP));
+                //Log.d(tag, "currentTimeStamp " + currentTimeStamp.toString());
+                //Log.d(tag, "savedTimeStamp " + savedTimeStamp.toString());
+                if (currentTimeStamp < savedTimeStamp + 3600) {
+                    updateDataInViews(data);
+                }
+            }
+        }
+
+
         @Override
         protected Integer doInBackground(Context... contexts) {
-            gbsLoader = new GBSLoader(contexts[0]);
+
             int status = gbsLoader.checkChanges();
-            Log.d("bla", Integer.toString(status));
             switch (status) {
                 case GBSLoader.CHNG_HASH_CHANGED:
                     data = gbsLoader.loadPrefsFromFile();
@@ -107,10 +127,10 @@ public class MainActivity extends AppCompatActivity {
             return status;
         }
 
-
         @Override
         protected void onPostExecute(Integer status) {
             super.onPostExecute(status);
+            data = gbsLoader.loadPrefsFromFile();
             switch (status) {
                 case GBSLoader.CHNG_ERR_CONNECT:
                     updateDateTextView(LINK_DOWN);
@@ -118,35 +138,48 @@ public class MainActivity extends AppCompatActivity {
                 case GBSLoader.CHNG_HASH_EQUAL:
                 case GBSLoader.CHNG_HASH_CHANGED:
                     updateDateTextView(LINK_OK);
-                    try {
-                        tvFirestTea.setText(data.getString(GBSLoader.DATA_FIRSTTEA));
-                        tvLunch.setText(data.getString(GBSLoader.DATA_LUNCH));
-                        tvInfo.setText(data.getString(GBSLoader.DATA_INFO));
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+                    updateDataInViews(data);
                     break;
                 case GBSLoader.CHNG_FLAG_ENABLED:
                     updateDateTextView(LINK_OK);
-                    try {
-                        tvFirestTea.setText(getString(R.string.noDatayet));
-                        tvLunch.setText(getString(R.string.noDatayet));
-                        tvInfo.setText(data.getString(GBSLoader.DATA_INFO));
-                    }catch (Exception e){
-                        e.printStackTrace();
-                    }
+                    updateDataInViews(data);
                     break;
             }
         }
     }
 
-    void updateDateTextView(boolean linkOk){
-        if (linkOk) {
-            DateFormat df = new SimpleDateFormat("HH:mm:ss");
-            String curDate = getText(R.string.statusLoaded) + " " + df.format(Calendar.getInstance().getTime());
-            tvStatus.setText(curDate);
-        } else {
-            tvStatus.setText(getText(R.string.network_error));
+    void updateDataInViews(HashMap<String, String> data){
+        if (data.get(GBSLoader.DATA_FLAG) == "") return; // если запускается первый раз, то и данных не будет
+        int flagType = Integer.parseInt(data.get(GBSLoader.DATA_FLAG));
+        switch (flagType) {
+            case UPDATE_ONLY_INFO:
+                Log.d(tag, "Update views method: only info");
+                tvFirestTea.setText(getString(R.string.noDatayet));
+                tvLunch.setText(getString(R.string.noDatayet));
+                tvInfo.setText(data.get(GBSLoader.DATA_INFO));
+                break;
+            case UPDATE_ALL_DATA:
+                Log.d(tag, "Update views method: all data");
+                tvFirestTea.setText(data.get(GBSLoader.DATA_FIRSTTEA));
+                tvLunch.setText(data.get(GBSLoader.DATA_LUNCH));
+                tvInfo.setText(data.get(GBSLoader.DATA_INFO));
+                break;
+            default:
+                break;
+        }
+    }
+
+    void updateDateTextView(int inetLinkState){
+        switch (inetLinkState){
+            case LINK_OK:
+                DateFormat df = new SimpleDateFormat("HH:mm:ss");
+                String curDate = getText(R.string.statusLoaded) + " " + df.format(Calendar.getInstance().getTime());
+                tvStatus.setText(curDate);
+                break;
+            case LINK_DOWN:
+
+                Toast.makeText(MainActivity.this, getText(R.string.network_error), Toast.LENGTH_SHORT).show();
+                break;
         }
     }
 }
