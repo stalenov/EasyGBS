@@ -2,7 +2,7 @@
     <string name="app_name">Допинг</string>
     <string name="btnRefresh">обовить</string>
     <string name="noDatayet">Данные еще не опубликованы</string>
-    <string name="network_error">Нет соединения с сервером =(</string>
+    <string name="network_error">Последняя попытка обновления не удалась. Со связью все хорошо?</string>
     <string name="statusLoaded">Последняя синхронизация в </string>
     <string name="firstTeaHead">Меню чая</string>
     <string name="LunchHead">Обед</string>
@@ -22,4 +22,6 @@
         <item>30</item>
     </string-array>
     <string name="menu_pref">Настройки</string>
+    <string name="menu_refresh">Обновить</string>
+    <string name="data_updated_at">Данные обновлены в</string>
 </resources>

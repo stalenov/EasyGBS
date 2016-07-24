@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
         tvLunch = (TextView) findViewById(R.id.tvLunch);
         tvFirestTea = (TextView) findViewById(R.id.tvFirstTea);
         tvInfo = (TextView) findViewById(R.id.tvInfo);
-        tvStatus = (TextView) findViewById(R.id.tvStatus);
+        /*tvStatus = (TextView) findViewById(R.id.tvStatus);
         btnRefresh = (Button) findViewById(R.id.btnRefresh);
         btnRefresh.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -46,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
                 Log.d(tag, "Button clicked");
                 new UpdateData().execute(MainActivity.this);
             }
-        });
+        }); */
         adc = new AlertDelayChanger(this);
     }
 
@@ -72,15 +72,24 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        menu.add(1, 1, 1, getString(R.string.menu_pref));
-        return super.onCreateOptionsMenu(menu);
+        //menu.add(1, 1, 1, getString(R.string.menu_pref));
+        getMenuInflater().inflate(R.menu.generalmenu, menu);
+        return true;
+        //return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == 1){
-            Intent prefIntent = new Intent(this, PrefActivity.class);
-            startActivity(prefIntent);
+        switch (item.getItemId()){
+            case R.id.action_preferences:
+                Intent prefIntent = new Intent(this, PrefActivity.class);
+                startActivity(prefIntent);
+                break;
+            case R.id.action_refresh:
+                new UpdateData().execute(MainActivity.this);
+                break;
+            default:
+                break;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -96,8 +105,6 @@ public class MainActivity extends AppCompatActivity {
             if (data.containsKey(GBSLoader.DATA_TIMESTAMP)) {     // иначе при первом запуске ляжет, т.к. файл пустой
                 Long currentTimeStamp = System.currentTimeMillis() / 1000;
                 Long savedTimeStamp = Long.parseLong(data.get(GBSLoader.DATA_TIMESTAMP));
-                //Log.d(tag, "currentTimeStamp " + currentTimeStamp.toString());
-                //Log.d(tag, "savedTimeStamp " + savedTimeStamp.toString());
                 if (currentTimeStamp < savedTimeStamp + 3600) {
                     updateDataInViews(data);
                 }
@@ -173,11 +180,11 @@ public class MainActivity extends AppCompatActivity {
         switch (inetLinkState){
             case LINK_OK:
                 DateFormat df = new SimpleDateFormat("HH:mm:ss");
-                String curDate = getText(R.string.statusLoaded) + " " + df.format(Calendar.getInstance().getTime());
-                tvStatus.setText(curDate);
+                String curDate = getText(R.string.data_updated_at) + " " + df.format(Calendar.getInstance().getTime());
+                //tvStatus.setText(curDate);
+                Toast.makeText(MainActivity.this, curDate, Toast.LENGTH_SHORT).show();
                 break;
             case LINK_DOWN:
-
                 Toast.makeText(MainActivity.this, getText(R.string.network_error), Toast.LENGTH_SHORT).show();
                 break;
         }
