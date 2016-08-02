@@ -17,10 +17,6 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".PrefActivity"
-            android:label="Настройки"
-            android:parentActivityName=".MainActivity"/>
-        <activity
             android:name=".PreferActivity"
             android:label="Настройки"
             android:parentActivityName=".MainActivity"/>

@@ -12,7 +12,6 @@ import android.graphics.Color;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.util.Log;
 
 public class GBSNotificator extends BroadcastReceiver {
     Context context;
@@ -21,7 +20,6 @@ public class GBSNotificator extends BroadcastReceiver {
     @Override
     public void onReceive(Context context,Intent intent){
         this.context = context;
-        Log.d("myTag","event!!!");
         new CheckHttpState().execute(context);
     }
 
@@ -37,7 +35,6 @@ public class GBSNotificator extends BroadcastReceiver {
         protected void onPostExecute(Integer state) {
             super.onPostExecute(state);
             if(state==GBSLoader.CHNG_HASH_CHANGED){
-                Log.d("myTag","httpStateCHanged");
 
                 Intent notificationIntent = new Intent(context, MainActivity.class);
                 PendingIntent contentIntent = PendingIntent.getActivity(context, 0, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
@@ -60,8 +57,6 @@ public class GBSNotificator extends BroadcastReceiver {
 
                 NotificationManager notificationManager = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
                 notificationManager.notify(NOTIFY_ID, notification);
-            }else{
-                Log.d("myTag","Other state");
             }
         }
     }

@@ -4,16 +4,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.Spinner;
-import android.widget.Toast;
-
-import java.util.Arrays;
 
 public class PreferActivity extends AppCompatActivity{
     RadioGroup rdDelay;
@@ -42,11 +33,6 @@ public class PreferActivity extends AppCompatActivity{
                 rdDelay.check(R.id.rb15);
                 break;
         }
-
-
-
-
-
     }
 
     @Override
@@ -67,7 +53,6 @@ public class PreferActivity extends AppCompatActivity{
                         break;
                     case R.id.rb5:
                         delay = "5";
-                        Log.d("myTag", "update delay to 5");
                         break;
                     default:
                     case R.id.rb15:
@@ -79,11 +64,8 @@ public class PreferActivity extends AppCompatActivity{
                 }
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(PreferActivity.this);
                 SharedPreferences.Editor editor = prefs.edit();
-                Log.d("myTag", "put string " + delay);
-                //editor.remove("update_delay");
                 editor.putString("update_delay", delay);
                 editor.commit();
-
             }
         }
     }

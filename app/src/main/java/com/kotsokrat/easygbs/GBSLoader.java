@@ -3,7 +3,6 @@ package com.kotsokrat.easygbs;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
-import android.util.Log;
 
 import org.json.JSONObject;
 import java.io.BufferedReader;
@@ -50,8 +49,6 @@ public class GBSLoader {
             JSONObject httpData = loadDataFromHTTP(HTTP_GET_TYPE_HASH);
             String hashHttp = httpData.getString(DATA_HASH);
             String flag = httpData.getString(DATA_FLAG);
-            Log.d("myLog", "checkChanges method started");
-            Log.d("myTag", "compare: " + hashHttp + " " + hashPrefs);
 
             if (flag.equals(Integer.toString(1))) {
                 if (!(hashHttp.equals(hashPrefs))) savePrefsToFile();
@@ -71,7 +68,6 @@ public class GBSLoader {
 
     public String loadPrefsHash(){
         sPref = PreferenceManager.getDefaultSharedPreferences(context);
-        Log.d("myTag", "from prefs: " + sPref.getString(DATA_HASH, ""));
         return sPref.getString(DATA_HASH, "");
     }
 
@@ -90,7 +86,6 @@ public class GBSLoader {
         data.put(DATA_FLAG, sPref.getString(DATA_FLAG, ""));
         data.put(DATA_TIMESTAMP, timeStamp);
 
-        Log.d("myTag", "Preferences loaded from http");
         return data;
     }
 
@@ -98,7 +93,6 @@ public class GBSLoader {
     public boolean savePrefsToFile(){
         sPref = PreferenceManager.getDefaultSharedPreferences(context);
         SharedPreferences.Editor ed = sPref.edit();
-        Log.d("myTag", "Preferences saved");
         try {
             Long timeStampLong = System.currentTimeMillis() / 1000;
             String timeStamp = timeStampLong.toString();
@@ -111,11 +105,9 @@ public class GBSLoader {
             ed.putString(DATA_FLAG, jsonData.getString(DATA_FLAG));
             ed.putString(DATA_TIMESTAMP, timeStamp);
             ed.commit();
-            Log.d("myTag", "from http: " + jsonData.getString(DATA_HASH));
             return true;
         }catch (Exception e){
             return false;
-            //e.printStackTrace();
         }
     }
 

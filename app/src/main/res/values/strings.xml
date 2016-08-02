@@ -2,25 +2,13 @@
     <string name="app_name">Допинг</string>
     <string name="btnRefresh">обовить</string>
     <string name="noDatayet">Данные еще не опубликованы</string>
-    <string name="network_error">Последняя попытка обновления не удалась. Со связью все хорошо?</string>
+    <string name="network_error">Последняя попытка обновления меню не удалась. Со связью все хорошо?</string>
     <string name="statusLoaded">Последняя синхронизация в </string>
-    <string name="firstTeaHead">Меню чая</string>
+    <string name="firstTeaHead">Чай</string>
     <string name="LunchHead">Обед</string>
     <string name="infoHead">Информация</string>
     <string name="pref_update_delay_title">Автозагрузка меню</string>
     <string name="pref_update_delay_summary">Частота автоматической проверки обновления меню, минут</string>
-    <string-array name="pref_update_delay_entries">
-        <item>Никогдашечки</item>
-        <item>Раз в 5 минут</item>
-        <item>Раз в 15 минут</item>
-        <item>Раз в 30 минут</item>
-    </string-array>
-    <string-array name="pref_update_delay_values">
-        <item>0</item>
-        <item>5</item>
-        <item>15</item>
-        <item>30</item>
-    </string-array>
     <string name="menu_pref">Настройки</string>
     <string name="menu_refresh">Обновить</string>
     <string name="data_updated_at">Данные обновлены в</string>
