@@ -8,7 +8,7 @@
     <string name="LunchHead">Обед</string>
     <string name="infoHead">Информация</string>
     <string name="pref_update_delay_title">Автозагрузка меню</string>
-    <string name="pref_update_delay_summary">Частота автоматической проверки обновления меню</string>
+    <string name="pref_update_delay_summary">Частота автоматической проверки обновления меню, минут</string>
     <string-array name="pref_update_delay_entries">
         <item>Никогдашечки</item>
         <item>Раз в 5 минут</item>
@@ -24,4 +24,8 @@
     <string name="menu_pref">Настройки</string>
     <string name="menu_refresh">Обновить</string>
     <string name="data_updated_at">Данные обновлены в</string>
+    <string name="rb_update_never">Никогдашечки</string>
+    <string name="rb_update_5">Раз в 5 минут</string>
+    <string name="rb_update_15">Раз в 15 минут</string>
+    <string name="rb_update_30">Раз в 30 минут</string>
 </resources>

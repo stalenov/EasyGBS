@@ -18,7 +18,12 @@
         </activity>
         <activity
             android:name=".PrefActivity"
-            android:label="Настройки"/>
+            android:label="Настройки"
+            android:parentActivityName=".MainActivity"/>
+        <activity
+            android:name=".PreferActivity"
+            android:label="Настройки"
+            android:parentActivityName=".MainActivity"/>
         <receiver android:name=".GBSNotificator"/>
         <receiver android:name=".OnSysStartReceiver">
             <intent-filter>

@@ -21,15 +21,14 @@
             android:layout_height="wrap_content"
             card_view:cardUseCompatPadding="true"
             card_view:cardCornerRadius="4dp"
-            card_view:contentPadding= "5dp"
             style="@style/CardView">
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
                 <ImageView
                     android:id="@+id/ivFirstTea"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="@dimen/imageDimens"
+                    android:layout_height="@dimen/imageDimens"
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentTop="true"
                     android:src="@mipmap/tea"/>
@@ -38,6 +37,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentTop="true"
+                    android:textSize="@dimen/textSize"
+                    android:layout_marginTop="@dimen/text_head_margin_top"
                     android:layout_toRightOf="@+id/ivFirstTea"
                     android:text="@string/firstTeaHead"
                     android:textStyle="bold" />
@@ -45,6 +46,7 @@
                     android:id="@+id/tvFirstTea"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:textSize="@dimen/textSize"
                     android:layout_toRightOf="@+id/ivFirstTea"
                     android:layout_below="@+id/tvFirstTeaHead"
                     android:text="" />
@@ -59,15 +61,14 @@
             android:layout_height="wrap_content"
             card_view:cardCornerRadius="4dp"
             card_view:cardUseCompatPadding="true"
-            card_view:contentPadding= "5dp"
             style="@style/CardView">
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
                 <ImageView
                     android:id="@+id/ivLunch"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="@dimen/imageDimens"
+                    android:layout_height="@dimen/imageDimens"
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentTop="true"
                     android:src="@mipmap/lunch"/>
@@ -77,12 +78,16 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentTop="true"
                     android:layout_toRightOf="@+id/ivLunch"
+                    android:textSize="@dimen/textSize"
+                    android:textAppearance="?android:textAppearanceMedium"
                     android:text="@string/LunchHead"
+                    android:layout_marginTop="@dimen/text_head_margin_top"
                     android:textStyle="bold" />
                 <TextView
                     android:id="@+id/tvLunch"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:textSize="@dimen/textSize"
                     android:layout_toRightOf="@+id/ivLunch"
                     android:layout_below="@+id/tvLunchHead"
                     android:text="" />
@@ -96,15 +101,14 @@
             android:layout_height="wrap_content"
             card_view:cardCornerRadius="4dp"
             card_view:cardUseCompatPadding="true"
-            card_view:contentPadding= "5dp"
             style="@style/CardView">
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
                 <ImageView
                     android:id="@+id/ivInfo"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="@dimen/imageDimens"
+                    android:layout_height="@dimen/imageDimens"
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentTop="true"
                     android:src="@mipmap/info"/>
@@ -114,12 +118,16 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentTop="true"
                     android:layout_toRightOf="@+id/ivInfo"
+                    android:textAppearance="?android:textAppearanceMedium"
                     android:text="@string/infoHead"
+                    android:textSize="@dimen/textSize"
+                    android:layout_marginTop="@dimen/text_head_margin_top"
                     android:textStyle="bold" />
                 <TextView
                     android:id="@+id/tvInfo"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:textSize="@dimen/textSize"
                     android:layout_toRightOf="@+id/ivInfo"
                     android:layout_below="@+id/tvInfoHead"
                     android:text="" />
